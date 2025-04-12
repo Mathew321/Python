@@ -48,27 +48,25 @@ class DiceGame:
             (2, 3, 4, 5): 500
         }
 
+        # Check for straights first
         for straight, value in straights.items():
             if all(counts[n] >= 1 for n in straight):
                 score += value
                 for n in straight:
-                    counts[n] -= 1
+                    counts[n] -= 1  # Reduce the count for used numbers
 
+        # Check for triplets
         for num in list(counts.keys()):
             if counts[num] >= 3:
-                multiplier = 1 + (counts[num] - 3)
-                score += triplets[num] * multiplier
-                counts[num] -= counts[num]
+                score += triplets[num]  # Base triplet score
+                score += (counts[num] - 3) * triplets[num]  # Extra dice in the triplet
+                counts[num] = 0  # Reset count after scoring
 
+        # Add individual dice values (1s and 5s)
         score += counts[1] * 100
         score += counts[5] * 50
-        counts[1] = 0
-        counts[5] = 0
 
-        if any(counts.values()):
-            return 0
-
-        return score if score > 0 else 0
+        return score
 
     def start(self):
         running = True
